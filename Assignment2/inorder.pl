@@ -1,5 +1,5 @@
 inorder(nil,[]).
-inorder(tree(X,Left,Right),Traversal):-
+inorder(bst(X,Left,Right),Traversal):-
 	inorder(Left,Left_t),
 	my_append(Left_t,[X],Temp),
 	inorder(Right,Right_t),
