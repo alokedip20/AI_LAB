@@ -1,52 +1,54 @@
-heap_sort(L, LSr):-
-	buildheap(L, H),
-	heapsortacc(H, [], LSr).
+heap_sort([],[]).
+heap_sort([X],[X]).
+heap_sort(List,Result):-
+	construct_maxheap(List,Heap),
+	heapsortacc(Heap,[],Result).
 
-buildheap([], nil).
-buildheap([X | Rest], H):-
-	partition(Rest, L, R),
-	buildheap(L, Leftheap),
-	buildheap(R, Rightheap),
-	heapify(heap(Leftheap, X, Rightheap), H).
+construct_maxheap([],nil).
+construct_maxheap([Head|Rest],Heap):-
+	partition(Rest,Left,Right),
+	construct_maxheap(Left,Left_heap),
+	construct_maxheap(Right,Right_heap),
+	max_heapify(heap(Head,Left_heap,Right_heap),Heap).
 
-partition([], [], []).
-partition([X], [X], []). 
-partition([X|[Y|Rest]], [X|L], [Y|R]):-
-	partition(Rest, L,R).
-
-
-heapsortacc(heap(_,nil,_), L, L).
-heapsortacc(heap(Leftheap, Val, Rightheap), L, LSr):-
-	 heapify(heap(Leftheap, nil, Rightheap), H),
+heapsortacc(heap(nil,_,_), L, L).
+heapsortacc(heap(Val, Leftheap,Rightheap), L, LSr):-
+	 max_heapify(heap(nil, Leftheap,Rightheap), H),
 	 heapsortacc(H, [Val | L], LSr).
-	 
-	 
-large(nil,nil):- 
-	!, 
+
+partition([],[],[]).
+partition([X],[X],[]).
+partition([X|[Y|Rest]],[X|Rest1],[Y|Rest2]):-
+	partition(Rest,Rest1,Rest2).
+
+max_heapify(heap(Root,nil,heap(RVal,Left,Right)),heap(RVal,nil,Right_heap)):-
+	greater(RVal,Root),
+	max_heapify(heap(Root,Left,Right),Right_heap).
+
+max_heapify(heap(Root,heap(LVal,Left,Right),nil),heap(LVal,Left_heap,nil)):-
+        greater(LVal,Root),
+        max_heapify(heap(Root,Left,Right),Left_heap).
+
+max_heapify(heap(Root,heap(LVal,LL,LR),heap(RVal,RL,RR)),heap(LVal,Left_heap,heap(RVal,RL,RR))):-
+	greater(LVal,Root),
+	greater(LVal,RVal),
+	max_heapify(heap(Root,LL,LR),Left_heap).
+
+max_heapify(heap(Root,heap(LVal,LL,LR),heap(RVal,RL,RR)),heap(RVal,heap(LVal,LL,LR),Right_heap)):-
+        greater(RVal,Root),
+	greater(RVal,LVal),
+        max_heapify(heap(Root,RL,RR),Right_heap).
+
+max_heapify(Heap,Heap).
+
+greater(nil,nil):-
+	!,
 	false.
-large(X, nil):- 
+greater(X,nil):-
 	!
 	.
-large(X,Y):- 
+greater(X,Y):-
 	X > Y, 
 	!;
 	!, 
 	false.
-	
-heapify(heap(nil, Val, heap(RL, RVal, RR)), heap(nil, RVal, Rightheap)):-
-	large(RVal, Val), !,
-	heapify(heap(RL, Val, RR), Rightheap).
-
-heapify(heap(heap(LL, LVal, LR), Val, nil), heap(Leftheap, LVal, nil)):-
-	large(LVal, Val), !,
-	heapify(heap(LL, Val, LR), Leftheap).
-
-heapify(heap(heap(LL, LVal,LR), Val, heap(RL, RVal, RR)), heap(Leftheap, LVal, heap(RL, RVal, RR))):-
-	large(LVal, Val),
-	large(LVal, RVal), !,
-	heapify(heap(LL, Val, LR), Leftheap).
-heapify(heap(heap(LL, LVal,LR), Val, heap(RL, RVal, RR)), heap(heap(LL, LVal, LR), RVal, Rightheap)):-
-	large(RVal, Val),
-	large(RVal, LVal), !,
-	heapify(heap(RL, Val, RR), Rightheap).
-heapify(H, H).
