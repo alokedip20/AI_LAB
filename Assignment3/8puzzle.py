@@ -61,7 +61,6 @@ def dfs(start,goal,limit = 10):
 	node_list = []
 	node_list.append(create_node(start,None,None,1))
 	while True:
-		display_state(node_list)
 		if len(node_list) == 0:
 			return None
 		node = node_list.pop(0)
@@ -101,11 +100,20 @@ def bfs(start,goal):
 				return moves
 			node_list.extend(generate_children(node))
 
+def iterative_deepening(start,goal):
+	level = 1
+	while True:
+		Moves = dfs(start,goal,level)
+		if Moves == None:
+			level += 1
+		else:
+			return Moves
+
 
 def main():
 	goal_state = [1,2,3,8,0,4,7,6,5]
 	initial_state = [1,2,3,8,6,7,0,5,4]
-	Moves = bfs(initial_state,goal_state)
+	Moves = dfs(initial_state,goal_state,20)
 	if Moves == None:
 		print ('No path found')
 	else:
