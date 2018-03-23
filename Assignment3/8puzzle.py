@@ -10,10 +10,10 @@ def create_node(state,parent,move,depth):
 
 def generate_children(node):
 	children = []
-	children.append(create_node(tile_up(node.state),node,'u',node.depth + 1))
-	children.append(create_node(tile_down(node.state),node,'d',node.depth + 1))
-	children.append(create_node(tile_left(node.state),node,'l',node.depth + 1))
-	children.append(create_node(tile_right(node.state),node,'r',node.depth + 1))
+	children.append(create_node(tile_up(node.state),node,'up',node.depth + 1))
+	children.append(create_node(tile_down(node.state),node,'down',node.depth + 1))
+	children.append(create_node(tile_left(node.state),node,'left',node.depth + 1))
+	children.append(create_node(tile_right(node.state),node,'right',node.depth + 1))
 	children = [child for child in children if child.state != None]
 	return children
 
@@ -66,7 +66,6 @@ def dfs(start,goal,limit = 10):
 			return None
 		node = node_list.pop(0)
 		if node.state == goal:
-			print ('Goal node has been found')
 			temp = node
 			moves = []
 			while True:
@@ -82,13 +81,35 @@ def dfs(start,goal,limit = 10):
 				gen_children.extend(node_list)
 				node_list = gen_children
 
+def bfs(start,goal):
+	node_list = []
+	node_list.append(create_node(start,None,None,1))
+	while True:
+		if len(node_list) == 0:
+			return None
+		else:
+			node = node_list.pop(0)
+			if node.state == goal:
+				temp = node
+				moves = []
+				while True:
+					if temp.depth == 1:
+						break
+					else:
+						moves.insert(0,temp.move)
+						temp = temp.parent
+				return moves
+			node_list.extend(generate_children(node))
+
+
 def main():
 	goal_state = [1,2,3,8,0,4,7,6,5]
-	initial_state = [2,0,3,1,8,4,7,6,5]
-	Moves = dfs(initial_state,goal_state)
+	initial_state = [1,2,3,8,6,7,0,5,4]
+	Moves = bfs(initial_state,goal_state)
 	if Moves == None:
 		print ('No path found')
 	else:
+		print ('Goal node has been found')
 		print (Moves)
 
 if __name__ == '__main__':
