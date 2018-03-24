@@ -1,3 +1,4 @@
+import sys
 class node:
 	def __init__(self, state,parent,move,depth):
 		self.state = state	
@@ -57,7 +58,7 @@ def tile_right(state):
 		return modified_state
 	return None
 
-def dfs(start,goal,limit = 10):
+def dfs(start,goal,limit = 40):
 	node_list = []
 	node_list.append(create_node(start,None,None,1))
 	while True:
@@ -111,9 +112,20 @@ def iterative_deepening(start,goal):
 
 
 def main():
+	'''
 	goal_state = [1,2,3,8,0,4,7,6,5]
 	initial_state = [1,2,3,8,6,7,0,5,4]
 	Moves = dfs(initial_state,goal_state,20)
+	if Moves == None:
+		print ('No path found')
+	else:
+		print ('Goal node has been found')
+		print (Moves)
+	'''
+	goal_state = [1,2,3,8,0,4,7,6,5]
+	initial_state = [int(a) for a in raw_input('Give the initial state: ').split()] 
+	algorithm = eval(sys.argv[1])
+	Moves = algorithm(initial_state,goal_state)
 	if Moves == None:
 		print ('No path found')
 	else:
