@@ -58,6 +58,13 @@ def tile_right(state):
 		return modified_state
 	return None
 
+def display(Node):
+	s = Node.state
+	print(str(s[0]) + "\t" + str(s[1]) + "\t" + str(s[2]))
+	print(str(s[3]) + "\t" + str(s[4]) + "\t" + str(s[5]))
+	print(str(s[6]) + "\t" + str(s[7]) + "\t" + str(s[8]))
+	print("------------------------------------------------")
+
 def dfs(start,goal,limit = 40):
 	node_list = []
 	node_list.append(create_node(start,None,None,1))
@@ -72,6 +79,7 @@ def dfs(start,goal,limit = 40):
 				if temp.depth == 1:
 					break
 				else:
+					display(temp)
 					moves.insert(0,temp.move)
 					temp = temp.parent
 			return moves
@@ -96,6 +104,7 @@ def bfs(start,goal):
 					if temp.depth == 1:
 						break
 					else:
+						display(temp)
 						moves.insert(0,temp.move)
 						temp = temp.parent
 				return moves
