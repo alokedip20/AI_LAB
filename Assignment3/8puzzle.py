@@ -1,21 +1,22 @@
 import sys
 goal_state = [1,2,3,8,0,4,7,6,5]
 class node:
-	def __init__(self, state,parent,move,depth):
+	def __init__(self, state,parent,move,depth,h_val):
 		self.state = state	
 		self.parent = parent
 		self.move = move
 		self.depth = depth
+		self.heuristic_value = h_val
 
-def create_node(state,parent,move,depth):
-	return node(state,parent,move,depth)
+def create_node(state,parent,move,depth,h_val = 0):
+	return node(state,parent,move,depth,h_val)
 
 def generate_children(node,open_list,close_list):
 	children = []
-	children.append(create_node(tile_up(node.state),node,'up',node.depth + 1))
-	children.append(create_node(tile_down(node.state),node,'down',node.depth + 1))
-	children.append(create_node(tile_left(node.state),node,'left',node.depth + 1))
-	children.append(create_node(tile_right(node.state),node,'right',node.depth + 1))
+	children.append(create_node(tile_up(node.state),node,'up',node.depth + 1,heuristic(tile_up(node.state),goal_state)))
+	children.append(create_node(tile_down(node.state),node,'down',node.depth + 1,heuristic(tile_down(node.state),goal_state)))
+	children.append(create_node(tile_left(node.state),node,'left',node.depth + 1,heuristic(tile_left(node.state),goal_state)))
+	children.append(create_node(tile_right(node.state),node,'right',node.depth + 1,heuristic(tile_right(node.state),goal_state)))
 	children = [child for child in children if child.state != None]
 	children = [child for child in children if child.state not in open_list]
 	children = [child for child in children if child.state not in close_list]
@@ -63,10 +64,10 @@ def tile_right(state):
 
 def display(Node):
 	s = Node.state
+	print('------------------- H = '+ str(Node.heuristic_value) + ' ----------------------------')
 	print(str(s[0]) + "\t" + str(s[1]) + "\t" + str(s[2]))
 	print(str(s[3]) + "\t" + str(s[4]) + "\t" + str(s[5]))
 	print(str(s[6]) + "\t" + str(s[7]) + "\t" + str(s[8]))
-	print("------------------------------------------------")
 
 def dfs(start,goal,limit = 40):
 	open_list = []
@@ -146,7 +147,6 @@ def hill_climbing(start,goal,limit = 40):
 					moves.insert(0,temp.move)
 					temp = temp.parent
 			return moves
-		heuristic_value = heuristic(node.state,goal)
 		if node.depth < limit:
 			gen_children = generate_children(node,open_list,close_list)
 			gen_children.sort(custom_cmp)
@@ -155,13 +155,16 @@ def hill_climbing(start,goal,limit = 40):
 		
 def heuristic(state,goal):
 	distance = 0
-	for i in range(9):
-		if state[i] != goal[i] and state[i] != 0 and goal[i] != 0 :
-			distance += 1
-	return distance
+	try:
+		for i in range(9):
+			if state[i] != goal[i] and state[i] != 0 and goal[i] != 0 :
+				distance += 1
+		return distance
+	except: 
+		return 0
 
 def custom_cmp(i,j):
-	return (heuristic(i.state,goal_state) - heuristic(j.state,goal_state))
+	return (i.heuristic_value - j.heuristic_value)
 
 def index_pos(index):
 	return (int(index / 3) , index % 3)
