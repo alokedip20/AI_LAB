@@ -1,4 +1,5 @@
 import sys
+goal_state = [1,2,3,8,0,4,7,6,5]
 class node:
 	def __init__(self, state,parent,move,depth):
 		self.state = state	
@@ -9,13 +10,15 @@ class node:
 def create_node(state,parent,move,depth):
 	return node(state,parent,move,depth)
 
-def generate_children(node):
+def generate_children(node,open_list,close_list):
 	children = []
 	children.append(create_node(tile_up(node.state),node,'up',node.depth + 1))
 	children.append(create_node(tile_down(node.state),node,'down',node.depth + 1))
 	children.append(create_node(tile_left(node.state),node,'left',node.depth + 1))
 	children.append(create_node(tile_right(node.state),node,'right',node.depth + 1))
 	children = [child for child in children if child.state != None]
+	children = [child for child in children if child.state not in open_list]
+	children = [child for child in children if child.state not in close_list]
 	return children
 
 def tile_up(state):
@@ -66,12 +69,14 @@ def display(Node):
 	print("------------------------------------------------")
 
 def dfs(start,goal,limit = 40):
-	node_list = []
-	node_list.append(create_node(start,None,None,1))
+	open_list = []
+	close_list = []
+	open_list.append(create_node(start,None,None,1))
 	while True:
-		if len(node_list) == 0:
+		if len(open_list) == 0:
 			return None
-		node = node_list.pop(0)
+		node = open_list.pop(0)
+		close_list.append(node)
 		if node.state == goal:
 			temp = node
 			moves = []
@@ -85,18 +90,20 @@ def dfs(start,goal,limit = 40):
 			return moves
 		else:
 			if node.depth < limit :
-				gen_children = generate_children(node)
-				gen_children.extend(node_list)
-				node_list = gen_children
+				gen_children = generate_children(node,open_list,close_list)
+				gen_children.extend(open_list)
+				open_list = gen_children
 
 def bfs(start,goal):
-	node_list = []
-	node_list.append(create_node(start,None,None,1))
+	open_list = []
+	close_list = []
+	open_list.append(create_node(start,None,None,1))
 	while True:
-		if len(node_list) == 0:
+		if len(open_list) == 0:
 			return None
 		else:
-			node = node_list.pop(0)
+			node = open_list.pop(0)
+			close_list.append(node)
 			if node.state == goal:
 				temp = node
 				moves = []
@@ -108,7 +115,7 @@ def bfs(start,goal):
 						moves.insert(0,temp.move)
 						temp = temp.parent
 				return moves
-			node_list.extend(generate_children(node))
+			open_list.extend(generate_children(node,open_list,close_list))
 
 def iterative_deepening(start,goal):
 	level = 1
@@ -119,19 +126,47 @@ def iterative_deepening(start,goal):
 		else:
 			return Moves
 
+def hill_climbing(start,goal,limit = 40):
+	open_list = []
+	close_list = []
+	open_list.append(create_node(start,None,None,1))
+	while True:
+		if len(open_list) == 0:
+			return None
+		node = open_list.pop(0)
+		close_list.append(node)
+		if node.state == goal:
+			temp = node
+			moves = []
+			while True:
+				if temp.depth == 1:
+					break
+				else:
+					display(temp)
+					moves.insert(0,temp.move)
+					temp = temp.parent
+			return moves
+		heuristic_value = heuristic(node.state,goal)
+		if node.depth < limit:
+			gen_children = generate_children(node,open_list,close_list)
+			gen_children.sort(custom_cmp)
+			gen_children.extend(open_list)
+			open_list = gen_children
+		
+def heuristic(state,goal):
+	distance = 0
+	for i in range(9):
+		if state[i] != goal[i] and state[i] != 0 and goal[i] != 0 :
+			distance += 1
+	return distance
+
+def custom_cmp(i,j):
+	return (heuristic(i.state,goal_state) - heuristic(j.state,goal_state))
+
+def index_pos(index):
+	return (int(index / 3) , index % 3)
 
 def main():
-	'''
-	goal_state = [1,2,3,8,0,4,7,6,5]
-	initial_state = [1,2,3,8,6,7,0,5,4]
-	Moves = dfs(initial_state,goal_state,20)
-	if Moves == None:
-		print ('No path found')
-	else:
-		print ('Goal node has been found')
-		print (Moves)
-	'''
-	goal_state = [1,2,3,8,0,4,7,6,5]
 	initial_state = [int(a) for a in raw_input('Give the initial state: ').split()] 
 	algorithm = eval(sys.argv[1])
 	Moves = algorithm(initial_state,goal_state)
