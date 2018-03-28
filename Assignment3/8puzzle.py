@@ -152,6 +152,30 @@ def hill_climbing(start,goal,limit = 40):
 			gen_children.sort(custom_cmp)
 			gen_children.extend(open_list)
 			open_list = gen_children
+
+def best_first(start,goal):
+	open_list = []
+	close_list = []
+	open_list.append(create_node(start,None,None,1))
+	while True:
+		if len(open_list) == 0:
+			return None
+		node = open_list.pop(0)
+		close_list.append(node)
+		if node.state == goal:
+			temp = node
+			moves = []
+			while True:
+				if temp.depth == 1:
+					break
+				else:
+					display(temp)
+					moves.insert(0,temp.move)
+					temp = temp.parent
+			return moves
+		gen_children = generate_children(node,open_list,close_list)
+		open_list.extend(gen_children)
+		open_list.sort(custom_cmp)
 		
 def heuristic(state,goal):
 	distance = 0
