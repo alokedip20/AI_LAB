@@ -198,13 +198,11 @@ def best_first(start,goal):
 		open_list.sort(custom_cmp)
 		
 def heuristic(state,goal):
+	return manhattan(state,goal)
+	
+def manhattan(state,goal):
 	distance = 0
 	try:
-		'''
-		for i in range(9):
-			if state[i] != goal[i] and state[i] != 0 and goal[i] != 0 :
-				distance += 1
-		'''
 		for i in range(1,9):
 			state_x,state_y = index_pos(state.index(i))
 			goal_x,goal_y = index_pos(goal.index(i))
