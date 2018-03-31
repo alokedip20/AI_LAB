@@ -104,7 +104,6 @@ def dfs(start,goal,limit = 20):
 				if temp.depth == 1:
 					break
 				else:
-					#display(temp)
 					moves.insert(0,temp.move)
 					temp = temp.parent
 			return moves
@@ -132,7 +131,6 @@ def bfs(start,goal):
 					if temp.depth == 1:
 						break
 					else:
-						#display(temp)
 						moves.insert(0,temp.move)
 						temp = temp.parent
 				return moves
@@ -166,7 +164,6 @@ def hill_climbing(start,goal,limit = 40):
 				if temp.depth == 1:
 					break
 				else:
-					#display(temp)
 					moves.insert(0,temp.move)
 					temp = temp.parent
 			return moves
@@ -193,7 +190,6 @@ def best_first(start,goal):
 				if temp.depth == 1:
 					break
 				else:
-					#display(temp)
 					moves.insert(0,temp.move)
 					temp = temp.parent
 			return moves
@@ -221,6 +217,8 @@ def main():
 	initial_state = [int(a) for a in raw_input('Give the initial state: ').split()] 
 	algorithms = ['dfs','bfs','iterative_deepening','hill_climbing','best_first']
 	for al in algorithms:
+		cmd = 'press any key to run the algo: ' + al
+		raw_input(cmd)
 		algorithm = eval(al)
 		Moves = algorithm(initial_state,goal_state)
 		if Moves == None:
@@ -228,7 +226,6 @@ def main():
 		else:
 			print ('Goal node has been found by '+ al)
 			print (Moves)
-		raw_input('press any key to run next algorithm')
 
 if __name__ == '__main__':
 	main()
