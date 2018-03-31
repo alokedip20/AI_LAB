@@ -147,7 +147,7 @@ def iterative_deepening(start,goal,limit = 20):
 		else:
 			return Moves
 
-def hill_climbing(start,goal,limit = 40):
+def hill_climbing(start,goal,limit = 20):
 	open_list = []
 	close_list = []
 	open_list.append(create_node(start,None,None,1))
@@ -200,9 +200,15 @@ def best_first(start,goal):
 def heuristic(state,goal):
 	distance = 0
 	try:
+		'''
 		for i in range(9):
 			if state[i] != goal[i] and state[i] != 0 and goal[i] != 0 :
 				distance += 1
+		'''
+		for i in range(1,9):
+			state_x,state_y = index_pos(state.index(i))
+			goal_x,goal_y = index_pos(goal.index(i))
+			distance += abs(goal_x - state_x) + abs(goal_y - state_y)
 		return distance
 	except: 
 		return 0
@@ -215,7 +221,7 @@ def index_pos(index):
 
 def main():
 	initial_state = [int(a) for a in raw_input('Give the initial state: ').split()] 
-	algorithms = ['dfs','bfs','iterative_deepening','hill_climbing','best_first']
+	algorithms = ['dfs','bfs','iterative_deepening','best_first','hill_climbing']
 	for al in algorithms:
 		cmd = 'press any key to run the algo: ' + al
 		raw_input(cmd)
