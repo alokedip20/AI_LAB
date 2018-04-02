@@ -196,7 +196,61 @@ def best_first(start,goal):
 		gen_children = generate_children(node,open_list,close_list)
 		open_list.extend(gen_children)
 		open_list.sort(custom_cmp)
-		
+	
+def a_star(start,goal):
+	open_list , close_list = [],[]
+	open_list.append(create_node(start,None,None,1))
+	heuristic_score = heuristic(start,goal)
+	while True:
+		if len(open_list) == 0:
+			return None
+		open_list.sort(custom_cmp_astar)
+		local_optimum_node = open_list.pop(0)
+		if local_optimum_node.state == goal:
+			temp = local_optimum_node
+			moves = []
+			while True:
+				if temp.depth == 1:
+					break
+				else:
+					moves.insert(0,temp.move)
+					temp = temp.parent
+			return moves
+		successor = generate_children(local_optimum_node,[],[])
+		for child in successor:
+			child.cost = local_optimum_node.cost + (child.depth - local_optimum_node.depth)
+			child_fscore = child.cost + heuristic(child,goal)
+			if child.state == goal:
+				temp = child
+				moves = []
+				while True:
+					if temp.depth == 1:
+						break
+					else:
+						moves.insert(0,temp.move)
+						temp = temp.parent
+				return moves
+
+			elif member_o(child,open_list):
+				old_child = [i for i in open_list if i.state == child.state][0]
+				old_child_fscore = old_child.cost + heuristic(old_child,goal)
+				if child_fscore < old_child_fscore:
+					old_child.parent = local_optimum_node
+					old_child.cost = child_fscore
+
+			elif member_c(child,close_list):
+				old_child = [i for i in close_list if i.state == child.state][0]
+				old_child_fscore = old_child.cost + heuristic(old_child,goal)
+				if child_fscore < old_child_fscore:
+					open_list.append(child)
+
+			else:
+				open_list.append(child)
+				
+		close_list.append(local_optimum_node)
+
+
+
 def heuristic(state,goal):
 	return manhattan(state,goal)
 	
@@ -214,12 +268,15 @@ def manhattan(state,goal):
 def custom_cmp(i,j):
 	return (i.heuristic_value - j.heuristic_value)
 
+def custom_cmp_astar(i,j):
+	return ((i.depth + i.heuristic_value) - (j.depth + j.heuristic_value))
+
 def index_pos(index):
 	return (int(index / 3) , index % 3)
 
 def main():
 	initial_state = [int(a) for a in raw_input('Give the initial state: ').split()] 
-	algorithms = ['dfs','bfs','iterative_deepening','best_first','hill_climbing']
+	algorithms = ['dfs','bfs','iterative_deepening','best_first','a_star','hill_climbing']
 	for al in algorithms:
 		cmd = 'press any key to run the algo: ' + al
 		raw_input(cmd)
