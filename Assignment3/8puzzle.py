@@ -1,5 +1,6 @@
 import sys
 goal_state = [1,2,3,8,0,4,7,6,5]
+FLAG = 0
 class node:
 	def __init__(self, state,parent,move,depth,h_val,node_cost):
 		self.state = state	
@@ -14,10 +15,10 @@ def create_node(state,parent,move,depth,h_val = 0,node_cost = 0):
 
 def generate_children(node,open_list,close_list):
 	children = []
-	children.append(create_node(tile_up(node.state),node,'up',node.depth + 1,heuristic(tile_up(node.state),goal_state)))
-	children.append(create_node(tile_down(node.state),node,'down',node.depth + 1,heuristic(tile_down(node.state),goal_state)))
-	children.append(create_node(tile_left(node.state),node,'left',node.depth + 1,heuristic(tile_left(node.state),goal_state)))
-	children.append(create_node(tile_right(node.state),node,'right',node.depth + 1,heuristic(tile_right(node.state),goal_state)))
+	children.append(create_node(tile_up(node.state),node,'up',node.depth + 1,heuristic(tile_up(node.state),goal_state , FLAG)))
+	children.append(create_node(tile_down(node.state),node,'down',node.depth + 1,heuristic(tile_down(node.state),goal_state , FLAG)))
+	children.append(create_node(tile_left(node.state),node,'left',node.depth + 1,heuristic(tile_left(node.state),goal_state , FLAG)))
+	children.append(create_node(tile_right(node.state),node,'right',node.depth + 1,heuristic(tile_right(node.state),goal_state , FLAG)))
 	children = [child for child in children if child.state != None]
 	#children = [child for child in children if child.state not in open_list]
 	#children = [child for child in children if child.state not in close_list]
@@ -209,7 +210,7 @@ def best_first(start,goal):
 def a_star(start,goal):
 	open_list , close_list = [],[]
 	open_list.append(create_node(start,None,None,1))
-	heuristic_score = heuristic(start,goal)
+	heuristic_score = heuristic(start,goal,FLAG)
 	comparison = 0
 	while True:
 		if len(open_list) == 0:
@@ -230,7 +231,7 @@ def a_star(start,goal):
 		successor = generate_children(local_optimum_node,[],[])
 		for child in successor:
 			child.cost = local_optimum_node.cost + (child.depth - local_optimum_node.depth)
-			child_fscore = child.cost + heuristic(child,goal)
+			child_fscore = child.cost + heuristic(child,goal,FLAG)
 			if child.state == goal:
 				temp = child
 				moves = []
@@ -245,7 +246,7 @@ def a_star(start,goal):
 			elif member_o(child,open_list):
 				comparison += 1
 				old_child = [i for i in open_list if i.state == child.state][0]
-				old_child_fscore = old_child.cost + heuristic(old_child,goal)
+				old_child_fscore = old_child.cost + heuristic(old_child,goal,FLAG)
 				if child_fscore < old_child_fscore:
 					old_child.parent = local_optimum_node
 					old_child.cost = child_fscore
@@ -253,7 +254,7 @@ def a_star(start,goal):
 			elif member_c(child,close_list):
 				comparison += 1
 				old_child = [i for i in close_list if i.state == child.state][0]
-				old_child_fscore = old_child.cost + heuristic(old_child,goal)
+				old_child_fscore = old_child.cost + heuristic(old_child,goal,FLAG)
 				if child_fscore < old_child_fscore:
 					open_list.append(child)
 
@@ -265,9 +266,21 @@ def a_star(start,goal):
 
 
 
-def heuristic(state,goal):
-	return manhattan(state,goal)
+def heuristic(state,goal,flag):
+	if not flag:
+		return manhattan(state,goal)
+	return hamming_distance(state,goal) + manhattan(state,goal)
 	
+def hamming_distance(state,goal):
+	distance = 0
+	try:
+		for i in range(9):
+			if state[i] != 0 and goal[i] != 0 and state[i] != goal[i]:
+				distance += 1
+		return distance
+	except :
+		return distance
+
 def manhattan(state,goal):
 	distance = 0
 	try:
