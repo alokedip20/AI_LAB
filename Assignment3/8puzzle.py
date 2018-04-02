@@ -91,9 +91,10 @@ def dfs(start,goal,limit = 20):
 	open_list = []
 	close_list = []
 	open_list.append(create_node(start,None,None,1))
+	comparison = 0
 	while True:
 		if len(open_list) == 0:
-			return None
+			return None , 0
 		node = open_list.pop(0)
 		if not member_c(node,close_list):
 			close_list.append(node)
@@ -106,8 +107,9 @@ def dfs(start,goal,limit = 20):
 				else:
 					moves.insert(0,temp.move)
 					temp = temp.parent
-			return moves
+			return moves , comparison
 		else:
+			comparison += 1
 			if node.depth < limit :
 				gen_children = generate_children(node,open_list,close_list)
 				gen_children.extend(open_list)
@@ -117,9 +119,10 @@ def bfs(start,goal):
 	open_list = []
 	close_list = []
 	open_list.append(create_node(start,None,None,1))
+	comparison = 0
 	while True:
 		if len(open_list) == 0:
-			return None
+			return None , 0
 		else:
 			node = open_list.pop(0)
 			if not member_c(node,close_list):
@@ -133,27 +136,30 @@ def bfs(start,goal):
 					else:
 						moves.insert(0,temp.move)
 						temp = temp.parent
-				return moves
+				return moves , comparison
+			comparison += 1
 			open_list.extend(generate_children(node,open_list,close_list))
 
 def iterative_deepening(start,goal,limit = 20):
 	level = 1
+	comparison = 0
 	while True:
-		Moves = dfs(start,goal,level)
+		Moves , comparison = dfs(start,goal,level)
 		if Moves == None:
 			level += 1
 			if level > limit:
 				return None
 		else:
-			return Moves
+			return Moves , comparison
 
 def hill_climbing(start,goal,limit = 20):
 	open_list = []
 	close_list = []
 	open_list.append(create_node(start,None,None,1))
+	comparison = 0
 	while True:
 		if len(open_list) == 0:
-			return None
+			return None , 0
 		node = open_list.pop(0)
 		if not member_c(node,close_list):
 				close_list.append(node)
@@ -166,8 +172,9 @@ def hill_climbing(start,goal,limit = 20):
 				else:
 					moves.insert(0,temp.move)
 					temp = temp.parent
-			return moves
+			return moves , comparison
 		if node.depth < limit:
+			comparison += 1
 			gen_children = generate_children(node,open_list,close_list)
 			gen_children.sort(custom_cmp)
 			gen_children.extend(open_list)
@@ -177,9 +184,10 @@ def best_first(start,goal):
 	open_list = []
 	close_list = []
 	open_list.append(create_node(start,None,None,1))
+	comparison = 0
 	while True:
 		if len(open_list) == 0:
-			return None
+			return None , 0
 		node = open_list.pop(0)
 		if not member_c(node,close_list):
 				close_list.append(node)
@@ -192,7 +200,8 @@ def best_first(start,goal):
 				else:
 					moves.insert(0,temp.move)
 					temp = temp.parent
-			return moves
+			return moves , comparison
+		comparison += 1
 		gen_children = generate_children(node,open_list,close_list)
 		open_list.extend(gen_children)
 		open_list.sort(custom_cmp)
@@ -201,9 +210,10 @@ def a_star(start,goal):
 	open_list , close_list = [],[]
 	open_list.append(create_node(start,None,None,1))
 	heuristic_score = heuristic(start,goal)
+	comparison = 0
 	while True:
 		if len(open_list) == 0:
-			return None
+			return None , 0
 		open_list.sort(custom_cmp_astar)
 		local_optimum_node = open_list.pop(0)
 		if local_optimum_node.state == goal:
@@ -215,7 +225,8 @@ def a_star(start,goal):
 				else:
 					moves.insert(0,temp.move)
 					temp = temp.parent
-			return moves
+			return moves , comparison
+		comparison += 1
 		successor = generate_children(local_optimum_node,[],[])
 		for child in successor:
 			child.cost = local_optimum_node.cost + (child.depth - local_optimum_node.depth)
@@ -229,9 +240,10 @@ def a_star(start,goal):
 					else:
 						moves.insert(0,temp.move)
 						temp = temp.parent
-				return moves
+				return moves , comparison
 
 			elif member_o(child,open_list):
+				comparison += 1
 				old_child = [i for i in open_list if i.state == child.state][0]
 				old_child_fscore = old_child.cost + heuristic(old_child,goal)
 				if child_fscore < old_child_fscore:
@@ -239,12 +251,14 @@ def a_star(start,goal):
 					old_child.cost = child_fscore
 
 			elif member_c(child,close_list):
+				comparison += 1
 				old_child = [i for i in close_list if i.state == child.state][0]
 				old_child_fscore = old_child.cost + heuristic(old_child,goal)
 				if child_fscore < old_child_fscore:
 					open_list.append(child)
 
 			else:
+				comparison += 1
 				open_list.append(child)
 				
 		close_list.append(local_optimum_node)
@@ -277,15 +291,16 @@ def index_pos(index):
 def main():
 	initial_state = [int(a) for a in raw_input('Give the initial state: ').split()] 
 	algorithms = ['dfs','bfs','iterative_deepening','best_first','a_star','hill_climbing']
+	comparison = 0
 	for al in algorithms:
 		cmd = 'press any key to run the algo: ' + al
 		raw_input(cmd)
 		algorithm = eval(al)
-		Moves = algorithm(initial_state,goal_state)
+		Moves , comparison = algorithm(initial_state,goal_state)
 		if Moves == None:
 			print ('No path found')
 		else:
-			print ('Goal node has been found by '+ al)
+			print ('Goal node has been found by '+ al + ' with comp = ' + str(comparison))
 			print (Moves)
 
 if __name__ == '__main__':
