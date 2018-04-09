@@ -269,7 +269,7 @@ def a_star(start,goal):
 def heuristic(state,goal,flag):
 	if not flag:
 		return manhattan(state,goal)
-	return hamming_distance(state,goal) + manhattan(state,goal)
+	return hamming_distance(state,goal)
 	
 def hamming_distance(state,goal):
 	distance = 0
@@ -301,8 +301,21 @@ def custom_cmp_astar(i,j):
 def index_pos(index):
 	return (int(index / 3) , index % 3)
 
+def solvable(state):
+	inv = 0
+	for i in range(8):
+		for j in range(i+1,9):
+			if state[i] and state[j] and state[i] > state[j]:
+				inv += 1
+	if inv % 2 != 0:
+		return True
+	return False
+
 def main():
 	initial_state = [int(a) for a in raw_input('Give the initial state: ').split()] 
+	if not solvable(initial_state):
+		print ('Not solvable')
+		return 0
 	algorithms = ['dfs','bfs','iterative_deepening','best_first','a_star','hill_climbing']
 	comparison = 0
 	for al in algorithms:
