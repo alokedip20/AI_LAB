@@ -20,8 +20,6 @@ def generate_children(node,open_list,close_list):
 	children.append(create_node(tile_left(node.state),node,'left',node.depth + 1,heuristic(tile_left(node.state),goal_state , FLAG)))
 	children.append(create_node(tile_right(node.state),node,'right',node.depth + 1,heuristic(tile_right(node.state),goal_state , FLAG)))
 	children = [child for child in children if child.state != None]
-	#children = [child for child in children if child.state not in open_list]
-	#children = [child for child in children if child.state not in close_list]
 	children = [child for child in children if not member_o(child,open_list)]
 	children = [child for child in children if not member_c(child,close_list)]
 	return children
@@ -307,7 +305,7 @@ def solvable(state):
 		for j in range(i+1,9):
 			if state[i] and state[j] and state[i] > state[j]:
 				inv += 1
-	if inv % 2 != 0:
+	if inv % 2 != 0:	#based upon goal state...... inv must be either in odd space or even space..
 		return True
 	return False
 
