@@ -37,8 +37,11 @@ def evaluation_board_state(board):
 
 def minimax(board,depth,ismax):
 	score = evaluation_board_state(board)
-	if score == computer_win or score == human_win:
-		return score
+	if score == computer_win:
+		return score - depth
+
+	if score == human_win:
+		return score + depth
 
 	if board_full(board):
 		return 0
@@ -91,7 +94,6 @@ def main():
 	while True:
 		human_move = int(raw_input('Give index in between 0 - 9 : \n'))
 		if valid_move(board,human_move):
-			print ('Valid move')
 			board[human_move] = human
 			if board_full(board):
 				print ('Draw match ... (')
