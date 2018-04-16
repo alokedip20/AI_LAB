@@ -1,3 +1,4 @@
+import random
 human , computer = 'o','x'
 computer_win , human_win = 20,-20
 def board_full(board):
@@ -91,14 +92,16 @@ def display_board(board):
 
 def main():
 	board = initialise_board()
-	while True:
+	chance = random.randint(1,101)
+	if chance % 2 == 0:
+		print ('Computer will start.... better luck next time')
+		cell , score = best_move(board)
+		board[cell] = computer
+	display_board(board)
+	while True and not board_full(board):
 		human_move = int(raw_input('Give index in between 0 - 9 : \n'))
 		if valid_move(board,human_move):
 			board[human_move] = human
-			if board_full(board):
-				print ('Draw match ... (')
-				display_board(board)
-				return 0
 			opt_cell,score = best_move(board)
 			print ('Computer chooses cell : '+str(opt_cell))
 			board[opt_cell] = computer
@@ -114,6 +117,7 @@ def main():
 				display_board(board)
 		else:
 			print ('Not a valid move')
+	print ('Draw match')
 
 if __name__ == '__main__':
 	main()
