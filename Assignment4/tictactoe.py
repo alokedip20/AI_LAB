@@ -39,10 +39,11 @@ def evaluation_board_state(board):
 
 def minimax(board,depth,ismax,alpha,beta):
 	score = evaluation_board_state(board)
-	if score == computer_win or score == human_win:
+	if score == computer_win:
 		#print ('found goal node for win or loose is = '+str(depth))
-		return score
-
+		return score - depth
+	if score == human_win:
+		return score + depth
 	if board_full(board):
 		#print ('found goal node for draw is = '+str(depth))
 		return 0
@@ -56,7 +57,7 @@ def minimax(board,depth,ismax,alpha,beta):
 				board[i] = '_'
 				alpha = max(alpha,best)
 				if beta <= alpha:
-					print ('Alpha Beta pruning occured')
+					#print ('Alpha Beta pruning occured')
 					break
 		return best
 
@@ -69,7 +70,7 @@ def minimax(board,depth,ismax,alpha,beta):
 				board[i] = '_'
 				beta = min(beta,best)
 				if beta <= alpha:
-					print ('Alpha Beta pruning occured')
+					#print ('Alpha Beta pruning occured')
 					break
 		return best
 
