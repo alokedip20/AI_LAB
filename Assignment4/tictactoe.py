@@ -1,6 +1,7 @@
 import random
 human , computer = 'o','x'
 computer_win , human_win = 20,-20
+INF = 9999
 def board_full(board):
 	for cell in board:
 		if cell == '_':
@@ -36,42 +37,49 @@ def evaluation_board_state(board):
 
 	return 0
 
-def minimax(board,depth,ismax):
+def minimax(board,depth,ismax,alpha,beta):
 	score = evaluation_board_state(board)
-	if score == computer_win:
-		return score - depth
-
-	if score == human_win:
-		return score + depth
+	if score == computer_win or score == human_win:
+		#print ('found goal node for win or loose is = '+str(depth))
+		return score
 
 	if board_full(board):
+		#print ('found goal node for draw is = '+str(depth))
 		return 0
 
 	if ismax:
-		best = -9999
+		best = -INF
 		for i in range(9):
 			if board[i] == '_':
 				board[i] = computer
-				best = max(best,minimax(board,depth + 1,not ismax))
+				best = max(best,minimax(board,depth + 1,not ismax,alpha,beta))
 				board[i] = '_'
+				alpha = max(alpha,best)
+				if beta <= alpha:
+					print ('Alpha Beta pruning occured')
+					break
 		return best
 
 	else:
-		best = 9999
+		best = INF
 		for i in range(9):
 			if board[i] == '_':
 				board[i] = human
-				best = min(best,minimax(board,depth + 1,not ismax))
+				best = min(best,minimax(board,depth + 1,not ismax,alpha,beta))
 				board[i] = '_'
+				beta = min(beta,best)
+				if beta <= alpha:
+					print ('Alpha Beta pruning occured')
+					break
 		return best
 
 def best_move(board):
-	best_val = -9999
+	best_val = -INF
 	optimum_cell = -1
 	for i in range(9):
 		if board[i] == '_':
 			board[i] = computer
-			move_val = minimax(board,0,False)
+			move_val = minimax(board,0,False,-INF,INF)
 			board[i] = '_'
 			if move_val > best_val:
 				optimum_cell = i
