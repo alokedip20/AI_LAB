@@ -1,7 +1,7 @@
 import random
 human , computer = 'o','x'
 computer_win , human_win = 20,-20
-INF = 9999
+INF = float('inf')
 def board_full(board):
 	for cell in board:
 		if cell == '_':
