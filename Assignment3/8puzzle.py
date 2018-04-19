@@ -24,21 +24,21 @@ def generate_children(node,open_list,close_list):
 	children = [child for child in children if not member_c(child,close_list)]
 	return children
 
-def member_o(i,open_list):
-	for index,elem in enumerate(open_list):
-		if i.state == elem.state:
-			print (str(index)+' element is in open list : '+str(i.state))
-			return True
-	return False
-
 def member_c(i,close_list,flag = 0):
 	for index,elem in enumerate(close_list):
 		if i.state == elem.state:
 			if not flag:
 				print (str(index)+' element is in close list : '+str(i.state))
 			return True
-	return False	
+	return False
 
+def member_o(i,open_list):
+	for index,elem in enumerate(open_list):
+		if i.state == elem.state:
+			print (str(index)+' element is in open list : '+str(i.state))
+			return True
+	return False
+	
 def tile_up(state):
 	modified_state = state[:]
 	index = modified_state.index(0)
